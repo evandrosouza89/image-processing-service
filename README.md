@@ -28,7 +28,7 @@ Image processing service is a demo web application that allows users to upload m
 3. Choose an operation from the dropdown:
     - **Rotate**: Rotate the images by 90, 180, or 270 degrees.
     - **Resize**: Set the desired width and height to resize the images.
-    - **Enlarge**: Enlarge the images by a percentage between 1% and 200%, excluding 100%.
+    - **Enlarge**: Enlarge the images by a percentage preserving its ratio. Must be between 1% and 200%, excluding 100%.
 4. Click the Submit button to process the images.
 5. Download the processed images.
 
