@@ -1,0 +1,54 @@
+# Go binary files
+/bin/
+/build/
+/out/
+
+# Go test binary files
+*.test
+
+# Dependency directories
+/vendor/
+Gopkg.lock
+/go.sum
+
+# IDE and editor files
+*.idea/
+*.vscode/
+*.swp
+*.swo
+*.sublime-workspace
+*.sublime-project
+
+# MacOS files
+.DS_Store
+
+# Logs
+*.log
+
+# Environment variables
+.env
+*.env
+
+# Coverage files
+*.cover
+coverage.out
+
+# Cgo files
+*.c
+*.h
+*.o
+*.so
+
+# Package files
+*.a
+*.o
+
+# Compiled object files
+*.o
+
+# Others
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib

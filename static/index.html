@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Batch Image Operations</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .dropzone {
+            border: 2px dashed #007bff;
+            border-radius: 5px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .dropzone.dragover {
+            border-color: #0056b3;
+        }
+
+        .preview img {
+            max-width: 100px;
+            margin: 10px;
+        }
+
+        .preview-container {
+            display: inline-block;
+            position: relative;
+        }
+
+        .remove-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background-color: red;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            width: 20px; /* Set equal width and height */
+            height: 20px; /* Set equal width and height */
+            display: flex; /* Center the text inside */
+            align-items: center; /* Center the text vertically */
+            justify-content: center; /* Center the text horizontally */
+            font-size: 14px; /* Adjust font size to fit inside */
+            line-height: 0; /* Remove default line height to better center text */
+        }
+
+    </style>
+</head>
+<body>
+<div class="container mt-5">
+    <h1 class="text-center">Batch Image Operations</h1>
+    <div id="dropzone" class="dropzone">
+        Drag & Drop Images Here (Max: 3 images, 350KB each)
+    </div>
+    <div class="preview mt-3"></div>
+    <form id="operationForm" class="mt-3">
+        <div class="form-group">
+            <label for="operation">Select Operation</label>
+            <select id="operation" class="form-control">
+                <option value="rotate">Rotate</option>
+                <option value="resize">Resize</option>
+                <option value="enlarge">Enlarge</option>
+            </select>
+        </div>
+        <div id="parameters">
+            <div id="rotateParams" class="form-group">
+                <label for="angle">Angle</label>
+                <select id="angle" class="form-control">
+                    <option value="90">90</option>
+                    <option value="180">180</option>
+                    <option value="270">270</option>
+                </select>
+            </div>
+            <div id="resizeParams" class="form-group d-none">
+                <label for="resizeWidth">Width</label>
+                <input type="number" id="resizeWidth" class="form-control" placeholder="1024">
+                <label for="resizeHeight">Height</label>
+                <input type="number" id="resizeHeight" class="form-control" placeholder="1024">
+            </div>
+            <div id="enlargeParams" class="form-group d-none">
+                <label for="enlargePercentage">Enlarge by Percentage</label>
+                <input type="number" id="enlargePercentage" class="form-control" value="50" min="1" max="200">
+                <small class="form-text text-muted">Enter a percentage between 1% and 200%, excluding 100%.</small>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+</div>
+
+<script>
+    const dropzone = document.getElementById('dropzone');
+    const preview = document.querySelector('.preview');
+    const operationForm = document.getElementById('operationForm');
+    const rotateParams = document.getElementById('rotateParams');
+    const resizeParams = document.getElementById('resizeParams');
+    const enlargeParams = document.getElementById('enlargeParams');
+
+    let images = [];
+
+    dropzone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropzone.classList.add('dragover');
+    });
+
+    dropzone.addEventListener('dragleave', () => {
+        dropzone.classList.remove('dragover');
+    });
+
+    dropzone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropzone.classList.remove('dragover');
+
+        const files = Array.from(e.dataTransfer.files);
+        files.forEach(file => {
+            if (file.type.startsWith('image/') && images.length < 3 && file.size <= 350 * 1024) {
+                images.push(file);
+                renderImagePreview(file);
+            }
+        });
+    });
+
+    function renderImagePreview(file) {
+        const imgContainer = document.createElement('div');
+        imgContainer.classList.add('preview-container');
+
+        const img = document.createElement('img');
+        img.src = URL.createObjectURL(file);
+        imgContainer.appendChild(img);
+
+        const removeBtn = document.createElement('button');
+        removeBtn.textContent = '×';
+        removeBtn.classList.add('remove-btn');
+        removeBtn.addEventListener('click', () => removeImage(file, imgContainer));
+        imgContainer.appendChild(removeBtn);
+
+        preview.appendChild(imgContainer);
+    }
+
+    function removeImage(file, imgContainer) {
+        const index = images.indexOf(file);
+        if (index > -1) {
+            images.splice(index, 1);
+            imgContainer.remove();
+        }
+    }
+
+    document.getElementById('operation').addEventListener('change', (e) => {
+        switch (e.target.value) {
+            case 'rotate':
+                rotateParams.classList.remove('d-none');
+                resizeParams.classList.add('d-none');
+                enlargeParams.classList.add('d-none');
+                break;
+            case 'resize':
+                rotateParams.classList.add('d-none');
+                resizeParams.classList.remove('d-none');
+                enlargeParams.classList.add('d-none');
+                break;
+            case 'enlarge':
+                rotateParams.classList.add('d-none');
+                resizeParams.classList.add('d-none');
+                enlargeParams.classList.remove('d-none');
+                break;
+        }
+    });
+
+    operationForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        if (images.length === 0) {
+            alert('Please add at least one image.');
+            return;
+        }
+
+        const operation = document.getElementById('operation').value;
+        let parameters = {};
+
+        if (operation === 'rotate') {
+            parameters.angle = parseInt(document.getElementById('angle').value);
+        } else if (operation === 'resize') {
+            parameters.width = parseInt(document.getElementById('resizeWidth').value);
+            parameters.height = parseInt(document.getElementById('resizeHeight').value);
+        } else if (operation === 'enlarge') {
+            const percentage = parseInt(document.getElementById('enlargePercentage').value);
+            if (percentage === 100 || isNaN(percentage) || percentage < 1 || percentage > 200) {
+                alert('Please enter a valid percentage between 1% and 200%, excluding 100%.');
+                return;
+            }
+            parameters.percentage = percentage;
+        }
+
+        const formData = new FormData();
+        images.forEach((image) => {
+            formData.append('images', image);
+        });
+        formData.append('operation', JSON.stringify({operation, parameters}));
+
+        fetch('http://localhost:8080/upload', {
+            method: 'POST',
+            body: formData
+        })
+            .then(async response => {
+                if (!response.ok) {
+                    const errorMessage = await response.json();
+                    throw new Error(errorMessage.error);
+                } else {
+                    return await response.formData();
+                }
+            })
+            .then(formData => {
+                for (const [name, value] of formData.entries()) {
+                    if (value instanceof Blob) {
+                        const link = document.createElement('a');
+                        link.href = URL.createObjectURL(value);
+                        link.download = name;
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                    }
+                }
+            })
+            .catch(error => {
+                alert(`Error: ${error.message}`);
+            });
+    });
+</script>
+</body>
+</html>
