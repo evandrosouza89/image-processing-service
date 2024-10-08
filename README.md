@@ -26,7 +26,7 @@ Image processing service is a demo web application that allows users to upload m
 <a id="usage"></a>
 ## Usage
 1. Open the application in your browser.
-2. Drag and drop images into the dropzone (Maximum 3 images, 350KB each).
+2. Drag and drop images into the dropzone (Maximum 3 images, 950KB each).
 3. Choose an operation from the dropdown:
     - **Rotate**: Rotate the images by 90, 180, or 270 degrees.
     - **Resize**: Set the desired width and height to resize the images.

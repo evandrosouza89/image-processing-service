@@ -2,7 +2,7 @@ package main
 
 const (
 	MaxBatchSize         = 3
-	MaxUploadSize        = 350 << 10 // 350 KB
+	MaxUploadSize        = 950 << 10 // 950 KB
 	MaxResizePixels      = 1024
 	MinEnlargePercentage = 1
 	MaxEnlargePercentage = 200
