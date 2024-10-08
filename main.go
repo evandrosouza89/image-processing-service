@@ -122,6 +122,11 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 
 	for processedImg := range processedImgs {
 
+		if processedImg.err != nil {
+			writeHttpError(w, processedImg.err, http.StatusBadRequest)
+			return
+		}
+
 		if err := buildResponse(multiPartWriter, processedImg); err != nil {
 			writeHttpError(w, err, http.StatusInternalServerError)
 			return
@@ -146,9 +151,11 @@ func writeHttpError(w http.ResponseWriter, err error, httpStatus int) {
 
 	w.WriteHeader(httpStatus)
 
-	_ = json.NewEncoder(w).Encode(errorResponse)
+	if encodeErr := json.NewEncoder(w).Encode(errorResponse); encodeErr != nil {
+		// Handle the case where encoding fails (optional)
+		http.Error(w, "Failed to encode error response", http.StatusInternalServerError)
+	}
 
-	http.Error(w, fmt.Sprintf("Error: %v", err), httpStatus)
 }
 
 func validateRequest(r *http.Request) error {
