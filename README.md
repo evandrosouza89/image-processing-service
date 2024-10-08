@@ -6,6 +6,8 @@
 
 Image processing service is a demo web application that allows users to upload multiple images and perform batch operations like rotating, resizing, and enlarging on them. The backend of this project is built using Go, and the frontend is designed using HTML, CSS, and JavaScript.
 
+[Check live demo on this link](https://image-processing-service.proudflower-714410d7.centralus.azurecontainerapps.io/)
+
 ## Table of Contents
 - [Installation](#features)
 - [Usage](#usage)
